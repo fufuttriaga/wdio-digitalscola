@@ -1,34 +1,31 @@
-const { expect } = require('chai');
+describe('Test Saucedemo', () => {
+    it('Test 1 - Login Successfully', async () => {
+        await browser.url("https://www.saucedemo.com/")
 
-describe('Sauce Demo', function() {
-    it('should login successfully', async function() {
-        await browser.url('https://www.saucedemo.com');
+        const usernameTextbox = await browser.$("#user-name")
+        const passwrodTextbox = await browser.$("#password")
+        const loginButton = await browser.$('//input[@type="submit"]')
 
-        // Login
-        await $('#user-name').setValue('standard_user');
-        await $('#password').setValue('secret_sauce');
-        await $('#login-button').click();
+        await usernameTextbox.addValue("standard_user")
+        await passwrodTextbox .addValue("secret_sauce")
+        await loginButton.click()
 
-        // Validate dashboard
-        const title = await browser.getTitle();
-        expect(title).to.equal('Swag Labs');
+        await expect(browser).toHaveUrl('https://www.saucedemo.com/inventory.html')  
+        await expect(browser).toHaveTitle('Swag Labs')
+
     });
+    it('Test 2 - Login With Wrong Password', async() => {
+        await browser.url("https://www.saucedemo.com/")
 
-    it('should add an item to the cart', async function() {
-        await browser.url('https://www.saucedemo.com');
+        const usernameTextbox = await browser.$("#user-name")
+        const passwrodTextbox = await browser.$("#password")
+        const loginButton = await browser.$('//input[@type="submit"]')
 
-        // Login
-        await $('#user-name').setValue('standard_user');
-        await $('#password').setValue('secret_sauce');
-        await $('#login-button').click();
+        await usernameTextbox.addValue("standard_user")
+        await passwrodTextbox .addValue("wrong password")
+        await loginButton.click()
 
-        // Add item to cart
-        await $('.inventory_item').waitForDisplayed();
-        const firstItemAddToCartButton = await $('.inventory_item:first-child .btn_inventory');
-        await firstItemAddToCartButton.click();
-
-        // Validate item added to cart
-        const cartItemCount = await $('.shopping_cart_badge').getText();
-        expect(cartItemCount).to.equal('1');
+        const ErroMessegeBox = await browser.$('//*[@id="login_button_container"]/div/form/div[3]/h3')
+        await expect(ErroMessegeBox).toContain("Epic sadface: Sorry, this user has been locked out.")
     });
 });
